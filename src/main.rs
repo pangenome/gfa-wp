@@ -44,7 +44,7 @@ fn main() -> Result<(), String> {
                     if toks.len() != 7 {
                         panic!("W line with {} tokesn found, expected 7: {}", toks.len(), line);
                     }
-                    let p_name = toks[1..4].join(sep) + ":" + toks[5] + "-" + toks[6];
+                    let p_name = toks[1..4].join(sep) + ":" + toks[4] + "-" + toks[5];
                     print!("P\t{}\t", p_name);
                     let steps: Vec<&str> = toks[6].split_inclusive(|c| c == '>' || c == '<').collect();
                     for i in 1..steps.len() {
