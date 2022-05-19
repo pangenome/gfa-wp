@@ -35,7 +35,7 @@ fn main() -> Result<(), String> {
     } else {
         reader = Box::new(BufReader::new(fs::File::open(gfa_path).unwrap()));
     }
-    
+
     for line_result in reader.lines() {
         match line_result {
             Ok(line) => {
@@ -44,11 +44,11 @@ fn main() -> Result<(), String> {
                     if toks.len() != 7 {
                         panic!("W line with {} tokesn found, expected 7: {}", toks.len(), line);
                     }
-                    let p_name = toks[1..6].join(sep);
+                    let p_name = toks[1..4].join(sep) + ":" + toks[5] + "-" + toks[6];
                     print!("P\t{}\t", p_name);
                     let steps: Vec<&str> = toks[6].split_inclusive(|c| c == '>' || c == '<').collect();
                     for i in 1..steps.len() {
-                        let strand = if steps[i-1].chars().nth(0).unwrap() == '>' {'+'} else {'-'};
+                        let strand = if steps[i-1].chars().last().unwrap() == '>' {'+'} else {'-'};
                         let node = &steps[i][0..steps[i].len()-1];
                         if i > 1 {
                             print!(",");
@@ -65,6 +65,6 @@ fn main() -> Result<(), String> {
             },
         }
     }
-    
+
     Ok(())
 }
