@@ -42,18 +42,27 @@ fn main() -> Result<(), String> {
                 if line.starts_with("W\t") {
                     let toks: Vec<&str> = line.split('\t').collect();
                     if toks.len() != 7 {
-                        panic!("W line with {} tokesn found, expected 7: {}", toks.len(), line);
+                        panic!("W line with {} tokens found, expected 7: {}", toks.len(), line);
                     }
                     let p_name = toks[1..4].join(sep) + ":" + toks[4] + "-" + toks[5];
                     print!("P\t{}\t", p_name);
-                    let steps: Vec<&str> = toks[6].split_inclusive(|c| c == '>' || c == '<').collect();
-                    for i in 1..steps.len() {
-                        let strand = if steps[i-1].chars().last().unwrap() == '>' {'+'} else {'-'};
-                        let node = &steps[i][0..steps[i].len()-1];
-                        if i > 1 {
+                    let walk = toks[6].as_bytes();
+                    let mut i = 1;
+                    let mut last = 1;
+                    let mut orient = &walk[0];
+                    while i < walk.len() {
+                        while i < walk.len() && (walk[i] as char).is_digit(10) {
+                            i += 1;
+                        }
+                        let strand = if *orient == '>' as u8 { '+' } else { '-' };
+                        let node = String::from_utf8(walk[last..i].to_vec()).unwrap();
+                        if last > 1 {
                             print!(",");
                         }
                         print!("{}{}", node, strand);
+                        if i < walk.len() { orient = &walk[i]; }
+                        i += 1;
+                        last = i;
                     }
                     print!("\t*\n");
                 } else {
